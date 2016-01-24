@@ -1,5 +1,5 @@
 # GhostWriter
-Stylizes scripts' text output to neat effect.
+In scripting, copy-pasting blocks of text is fast, simple, and effective. It's also boring. The solution: a command line accessible application that outputs blocks of text one character at a time. You'll swear a ghost was at the keyboard...
 
 
 USAGE: (Command Line)
