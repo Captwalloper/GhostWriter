@@ -1,4 +1,5 @@
 ; Config
+sleep, 1000
 simpleDemoFilename := "Demo.txt"
 ;demoFilename := % "C:\Users\comcc_000\Documents\GitHub\GhostWriter\" . simpleDemoFilename
 ghostWriterFilename := "GhostWriter.ahk"
@@ -30,18 +31,26 @@ WaitForContinue()
 Sleep, 3000
 
 OpenNotepad(simpleDemoFilename)
-RunInBackground("-fast rc", "`nWatch me slowly write this top line.", "Until you notice how relatively fast this line is typed. Zoooooooooooooooooooooooooooooooooooooooooom")
+RunInBackground("t", "`n`nWatch me ", "")
+WaitForContinue()
+RunInBackground("-fast rc", "slowly write this top line.", "Until you notice how relatively fast this line is typed. (Zooooooooooooooooooooooooooooooooooooooooom)")
+WaitForContinue()
+Sleep, 3000
+RunInBackground("-fast rc", "`nThat's right.", "Two line simultaneous output.")
 WaitForContinue()
 Sleep, 3000
 
-RunInBackground("t", "`nSo why use GhostWriter? Because I make scripts look cool.", "")
+RunInBackground("t", "`n`nSo why use GhostWriter?", "")
+WaitForContinue()
+Sleep, 3000
+RunInBackground("t", " Because I make scripts look cool.", "")
 WaitForContinue()
 Sleep, 3000
 RunInBackground("t", "`nGoodbye.", "")
 WaitForContinue()
 Sleep, 3000
 
-
+Restart()
 
 ExitApp
 
@@ -153,5 +162,30 @@ ClearSignal()
 	signalValue := "waiting"
 	filename := "C:\Users\comcc_000\Documents\GitHub\GhostWriter\infoPass.ini"
 	IniWrite, %signalValue%, %filename%, section1, key
+}
+
+CloseNotepad() 
+{
+	title := "Demo - Notepad"
+	WinClose, %title%
+	Send, {Enter}
+}
+
+CloseCommandPrompt()
+{
+	global commandPromptTitle
+	
+	WinClose, %commandPromptTitle%
+}
+
+Restart()
+{
+	CloseNotepad()
+	CloseCommandPrompt()
+	
+	line := "GhostWriterDriver.ahk"
+	run, %line%
+	sleep, 200
+	Send, {Enter}
 }
 

@@ -6,7 +6,7 @@ count := %0%
 mode := "error"
 content := "error"
 target := "error"
-percentChanceForMistake := 1
+tenthPercentChanceForMistake := 20 ;0.5%
 
 	; Params
 if (count = 0) {
@@ -65,7 +65,7 @@ WriteLine(line)
 	while (i <= length) {
 		char := CharAt(line, i)
 		;MsgBox, Char: %char%
-		WriteChar(char)
+		WriteCharMistake(char)
 		i := i + 1
 	}
 	;SendSignal()
@@ -81,7 +81,7 @@ WriteChar(char)
 
 WriteCharMistake(char) 
 {
-	mistake := ChancePercent()
+	mistake := TenthChancePercent()
 	if (mistake) {
 		Mistake()
 	}
@@ -142,12 +142,12 @@ Flash()
 	sleep, 500
 }
 
-ChancePercent()
+TenthChancePercent()
 {
 	global percentChanceForMistake
 	
 	rand := -1
-	Random, rand, 0, 100
+	Random, rand, 0, 1000
 	if (rand < percentChanceForMistake) {
 		return true
 	}
@@ -160,8 +160,8 @@ BeginNewlineAtEOF()
 	Sleep, 50
 	Send, {Right}
 	Sleep, 50
-	Send, {Enter}
-	Sleep, 50
+	;Send, {Enter}
+	;Sleep, 50
 }
 
 SendSignal()
@@ -188,8 +188,8 @@ RunConcurrently(Line1, Line2, Multiple)
 		If (L1index = L1inc + 1) {
 			Send, {Enter}
 			sleep, 100
-			Send, {Enter}
-			sleep, 100
+			;Send, {Enter}
+			;sleep, 100
 		} else if ( LineEnded(Line1, L1index, L1inc) <> true || LineEnded(Line2, L2index, L2inc) <> true ) {
 			GoFromL1EndToL2End()
 		} 
@@ -198,13 +198,15 @@ RunConcurrently(Line1, Line2, Multiple)
 			GoFromL2EndToL1End()
 		}
 	}
+	
+	GoFromL1EndToL2End() ;move cursor to EOF
 }
 
 GoFromL1EndToL2End()
 {
 	Send, {Down}
 	;sleep, 1
-	Send, {Down}
+	;Send, {Down}
 	;sleep, 1
 	Send, {End}
 	;sleep, 1
@@ -214,7 +216,7 @@ GoFromL2EndToL1End()
 {
 	Send, {Up}
 	;sleep, 1
-	Send, {Up}
+	;Send, {Up}
 	;sleep, 1
 	Send, {End}
 	;sleep, 1
