@@ -1,12 +1,12 @@
 ; Config
 numParams := %0%
-testFilename := "C:\Users\comcc_000\Desktop\Games\AutoHotkey\Test.txt"
+;testFilename := "C:\Users\comcc_000\Desktop\Games\AutoHotkey\Test.txt"
 charDelay := 100
 count := %0%
 mode := "error"
 content := "error"
 target := "error"
-percentChanceForMistake := 2
+percentChanceForMistake := 1
 
 	; Params
 if (count = 0) {
@@ -29,13 +29,11 @@ else if (mode = "f") {
 	WriteLine(text)
 }
 else if (mode = "tf") {
-	Run, %testFilename%
-	Sleep, 500
-	BeginNewlineAtEOF()
-	WriteLine(content)
+	Append(target, content)
 }
 else if (mode = "ff") {
-
+	text := LoadText(content)
+	Append(target, text)
 }
 else {
 	MsgBox, Mode (1st param) must be: t, f, tf, or ff!
@@ -45,9 +43,6 @@ ExitApp
 
 
 ; Keys
-^l::
-	WriteLine("hallelujah ajf;lksajfkl;sdajf;lksjaf;lksjaf;jad")
-return
 
 	
 ; Functions
@@ -59,9 +54,10 @@ WriteLine(line)
 	while (i <= length) {
 		char := CharAt(line, i)
 		;MsgBox, Char: %char%
-		WriteCharMistake(char)
+		WriteChar(char)
 		i := i + 1
 	}
+	SendSignal()
 }
 
 WriteChar(char) 
@@ -96,6 +92,14 @@ Delete(numDeletes)
 		sleep, 100
 }
 
+Append(filename, content)
+{
+	Run, %filename%
+	Sleep, 500
+	BeginNewlineAtEOF()
+	WriteLine(content)
+}
+
 CharAt(string, pos) 
 {
 	return SubStr(string, pos, 1)
@@ -103,6 +107,7 @@ CharAt(string, pos)
 
 LoadText(filename) 
 {
+	newline := "`n" ;"`r`n"
 	text := ""
 	Loop, read, %filename%
 	{
@@ -111,11 +116,19 @@ LoadText(filename)
 		Loop, parse, A_LoopReadLine, TXT
 		{
 			;MsgBox, Text: %A_LoopReadLine%
-			text := % text . "`r`n" . A_LoopReadLine
+			text := % text . newline . A_LoopReadLine
 			;MsgBox, Text: %text%
 		}
 	}
 	return text
+}
+
+Flash()
+{
+	WriteChar(".")
+	sleep, 500
+	Delete(1)
+	sleep, 500
 }
 
 ChancePercent()
@@ -138,4 +151,56 @@ BeginNewlineAtEOF()
 	Sleep, 50
 	Send, {Enter}
 	Sleep, 50
+}
+
+SendSignal()
+{
+	signalValue := "done"
+	filename := "C:\Users\comcc_000\Documents\GitHub\GhostWriter\infoPass.ini"
+	IniWrite, %signalValue%, %filename%, section1, key
+}
+
+RunConcurrently(Line1, Line2, Multiple)
+{
+	L1index := 0
+	L2index := 0
+	L1inc := 1
+	L2inc := L1inc * Multiple
+	
+	while( LineEnded(Line1, L1index) <> true || LineEnded(Line2, L2index) <> true) {
+		L1sub := SubStr(Line1, L1index, L1inc)
+		L1index := L1index + L1inc
+		L2sub := SubStr(Line2, L2index, L2inc)
+		L2index := L2index + L2inc
+		
+		WriteLine(Line1)
+		GoFromL1EndToL2End()
+		WriteLine(Line2)
+		GoFromL2EndToL1End()
+	}
+}
+
+GoFromL1EndToL2End()
+{
+	Send, {Down}
+	sleep, 100
+	Send, {Down}
+	sleep, 100
+	Send, {End}
+	sleep, 100
+}
+
+GoFromL2EndToL1End()
+{
+	Send, {Up}
+	sleep, 100
+	Send, {Up}
+	sleep, 100
+	Send, {End}
+	sleep, 100
+}
+
+LineEnded(line, index) 
+{
+	return index >= StrLen(line) 
 }
