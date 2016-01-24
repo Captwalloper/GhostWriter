@@ -2,10 +2,11 @@
 numParams := %0%
 testFilename := "C:\Users\comcc_000\Desktop\Games\AutoHotkey\Test.txt"
 charDelay := 100
-count = %0%
-mode = "error"
-content = "error"
-target = "error"
+count := %0%
+mode := "error"
+content := "error"
+target := "error"
+percentChanceForMistake := 2
 
 	; Params
 if (count = 0) {
@@ -58,7 +59,7 @@ WriteLine(line)
 	while (i <= length) {
 		char := CharAt(line, i)
 		;MsgBox, Char: %char%
-		WriteChar(char)
+		WriteCharMistake(char)
 		i := i + 1
 	}
 }
@@ -69,6 +70,30 @@ WriteChar(char)
 
 	SendInput, %char%
 	sleep, %charDelay%
+}
+
+WriteCharMistake(char) 
+{
+	mistake := ChancePercent()
+	if (mistake) {
+		Mistake()
+	}
+	WriteChar(char)
+}
+
+Mistake()
+{
+	mistake := "SHFTW"
+	WriteLine(mistake)
+	length := StrLen(mistake)
+	Delete(length)
+}
+
+Delete(numDeletes)
+{
+	Loop, %numDeletes%
+		send, {Backspace}
+		sleep, 100
 }
 
 CharAt(string, pos) 
@@ -91,6 +116,18 @@ LoadText(filename)
 		}
 	}
 	return text
+}
+
+ChancePercent()
+{
+	global percentChanceForMistake
+	
+	rand := -1
+	Random, rand, 0, 100
+	if (rand < percentChanceForMistake) {
+		return true
+	}
+	return false
 }
 
 BeginNewlineAtEOF() 
