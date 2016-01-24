@@ -14,10 +14,21 @@ if (count = 0) {
 	ExitApp
 }
 
-mode = %1%
-content = %2%
-if (mode = "ff" || mode = "tf") {
-	target = %3%
+index := 1
+while ( CharAt(%index%, 1) = "-" ) {
+	if (%index% = "-fast") {
+		charDelay := 1
+	}
+	index := index + 1
+}
+
+mode := %index%
+index := index + 1
+content := %index%
+index := index + 1
+if (mode = "ff" || mode = "tf" || mode = "rc") {
+	target := %index%
+	index := index + 1
 }
 
 ; Main 
@@ -31,13 +42,13 @@ else if (mode = "f") {
 else if (mode = "tf") {
 	Append(target, content)
 }
-else if (mode = "ff") {
-	text := LoadText(content)
-	Append(target, text)
+else if (mode = "rc") {
+	RunConcurrently(content, target, 4)
 }
 else {
-	MsgBox, Mode (1st param) must be: t, f, tf, or ff!
+	MsgBox, Mode (1st param) must be: t, f, tf, ff, or rc!
 }
+SendSignal()
 
 ExitApp
 
@@ -57,7 +68,7 @@ WriteLine(line)
 		WriteChar(char)
 		i := i + 1
 	}
-	SendSignal()
+	;SendSignal()
 }
 
 WriteChar(char) 
@@ -162,45 +173,58 @@ SendSignal()
 
 RunConcurrently(Line1, Line2, Multiple)
 {
-	L1index := 0
-	L2index := 0
+	L1index := 1
+	L2index := 1
 	L1inc := 1
 	L2inc := L1inc * Multiple
 	
-	while( LineEnded(Line1, L1index) <> true || LineEnded(Line2, L2index) <> true) {
+	while( LineEnded(Line1, L1index, L1inc) <> true || LineEnded(Line2, L2index, L2inc) <> true) {
 		L1sub := SubStr(Line1, L1index, L1inc)
 		L1index := L1index + L1inc
 		L2sub := SubStr(Line2, L2index, L2inc)
 		L2index := L2index + L2inc
 		
-		WriteLine(Line1)
-		GoFromL1EndToL2End()
-		WriteLine(Line2)
-		GoFromL2EndToL1End()
+		WriteLine(L1sub)
+		If (L1index = L1inc + 1) {
+			Send, {Enter}
+			sleep, 100
+			Send, {Enter}
+			sleep, 100
+		} else if ( LineEnded(Line1, L1index, L1inc) <> true || LineEnded(Line2, L2index, L2inc) <> true ) {
+			GoFromL1EndToL2End()
+		} 
+		WriteLine(L2sub)
+		if ( LineEnded(Line1, L1index, L1inc) <> true || LineEnded(Line2, L2index, L2inc) <> true ) {
+			GoFromL2EndToL1End()
+		}
 	}
 }
 
 GoFromL1EndToL2End()
 {
 	Send, {Down}
-	sleep, 100
+	;sleep, 1
 	Send, {Down}
-	sleep, 100
+	;sleep, 1
 	Send, {End}
-	sleep, 100
+	;sleep, 1
 }
 
 GoFromL2EndToL1End()
 {
 	Send, {Up}
-	sleep, 100
+	;sleep, 1
 	Send, {Up}
-	sleep, 100
+	;sleep, 1
 	Send, {End}
-	sleep, 100
+	;sleep, 1
 }
 
-LineEnded(line, index) 
+LineEnded(line, index, inc) 
 {
-	return index >= StrLen(line) 
+	lineEnded := index >= StrLen(line) + inc
+	if (lineEnded) {
+		;msgbox, LineEnded!
+	}
+	return lineEnded
 }

@@ -8,6 +8,7 @@ commandPromptTitle := "C:\WINDOWS\system32\cmd.exe"
 ClearSignal()
 
 ; Main 
+
 OpenNotepad(simpleDemoFilename)
 DeleteAll()
 SendInput, Hello, I'm GhostWriter...
@@ -17,14 +18,26 @@ PasteLine("`nCopy-pasting is great for scripting.")
 Sleep, 4000
 PasteLine("It's simple, fast, and efficient. However...")
 Sleep, 4000
-RunInBackground("t", "Typing 1 character at a time is cooler.")
+RunInBackground("t", "Typing 1 character at a time is cooler.", "")
 WaitForContinue()
 Sleep, 3000
 
-RunInForeground("t", "Using a simple command-line interface, I can output a line of text...")
+RunInForeground("t", "Using a simple command-line interface, I can output a line of text...", "")
 WaitForContinue()
 Sleep, 3000
-RunInForeground("f", "SimpleFileExample.txt")
+RunInForeground("f", "SimpleFileExample.txt", "")
+WaitForContinue()
+Sleep, 3000
+
+OpenNotepad(simpleDemoFilename)
+RunInBackground("-fast rc", "`nWatch me slowly write this top line.", "Until you notice how relatively fast this line is typed. Zoooooooooooooooooooooooooooooooooooooooooom")
+WaitForContinue()
+Sleep, 3000
+
+RunInBackground("t", "`nSo why use GhostWriter? Because I make scripts look cool.", "")
+WaitForContinue()
+Sleep, 3000
+RunInBackground("t", "`nGoodbye.", "")
 WaitForContinue()
 Sleep, 3000
 
@@ -74,50 +87,23 @@ WaitForContinue()
 	continue := false
 }
 
-RunInBackground(mode, content) 
+RunInBackground(mode, content, target) 
 {
 	global ghostWriterFilename
 
-	line := % """" . A_AhkPath . """ " . ghostWriterFilename . " " . mode . " " . """" . content . """"
+	line := % """" . A_AhkPath . """ " . ghostWriterFilename . " " . mode . " " . """" . content . """" . " """ . target . """"
 	run, %line%
 }
 
-RunInForeground(mode, content)
+RunInForeground(mode, content, target)
 {
 	global ghostWriterFilename
 
 	OpenCommandPrompt()
 	sleep, 1000
-	line := % """" . A_AhkPath . """ " . ghostWriterFilename . " " . mode . " " . """" . content . """"
+	line := % """" . A_AhkPath . """ " . ghostWriterFilename . " " . mode . " " . """" . content . """" . " """ . target . """"
 	RunOnCommandLine(line)
 	Sleep, 500
-}
-
-RunConcurrently(Line1, Line2, Multiple)
-{
-	L1index := 0
-	L2index := 0
-	L1inc := 1
-	L2inc := L1inc * Multiple
-	
-	while( LineEnded(Line1, L1index) <> true || LineEnded(Line2, L2index) <> true) {
-		L1sub := SubStr(Line1, L1index, L1inc)
-		L1index := L1index + L1inc
-		L2sub := SubStr(Line2, L2index, L2inc)
-		L2index := L2index + L2inc
-		
-		
-	}
-}
-
-WriteLine1(line) 
-{
-	
-}
-
-LineEnded(line, index) 
-{
-	return index >= StrLen(line) 
 }
 
 OpenCommandPrompt() {
@@ -136,19 +122,6 @@ RunOnCommandLine(line) {
 	SendInput, %line%
 	sleep, 250
 	Send, {enter} 
-	sleep, 100
-}
-
-Delete(numDeletes)
-{
-	Loop, %numDeletes%
-		send, {Backspace}
-		sleep, 100
-}
-
-WriteChar(char) 
-{
-	SendInput, %char%
 	sleep, 100
 }
 
