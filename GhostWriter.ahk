@@ -2,22 +2,52 @@
 numParams := %0%
 testFilename := "C:\Users\comcc_000\Desktop\Games\AutoHotkey\Test.txt"
 charDelay := 100
+count = %0%
+mode = "error"
+content = "error"
+target = "error"
+
+	; Params
+if (count = 0) {
+	MsgBox, No params!
+	ExitApp
+}
+
+mode = %1%
+content = %2%
+if (mode = "ff" || mode = "tf") {
+	target = %3%
+}
 
 ; Main 
-CheckParams(numParams)
-text = %1%
-;msgbox, % "Text: " text
+if (mode = "t") {
+	WriteLine(content)
+} 
+else if (mode = "f") {
+	text := LoadText(content)
+	WriteLine(text)
+}
+else if (mode = "tf") {
+	Run, %testFilename%
+	Sleep, 500
+	BeginNewlineAtEOF()
+	WriteLine(content)
+}
+else if (mode = "ff") {
 
-text := LoadText(text)
-WriteLine(text)
+}
+else {
+	MsgBox, Mode (1st param) must be: t, f, tf, or ff!
+}
 
 ExitApp
 
-; Keys
 
-^c::
+; Keys
+^l::
 	WriteLine("hallelujah ajf;lksajfkl;sdajf;lksjaf;lksjaf;jad")
 return
+
 	
 ; Functions
 WriteLine(line) 
@@ -46,14 +76,6 @@ CharAt(string, pos)
 	return SubStr(string, pos, 1)
 }
 
-CheckParams(numParams) 
-{
-	if (numParams = 0) {
-		MsgBox, No params!
-		ExitApp
-	}
-}
-
 LoadText(filename) 
 {
 	text := ""
@@ -69,4 +91,14 @@ LoadText(filename)
 		}
 	}
 	return text
+}
+
+BeginNewlineAtEOF() 
+{
+	Send, ^+{End}
+	Sleep, 50
+	Send, {Right}
+	Sleep, 50
+	Send, {Enter}
+	Sleep, 50
 }
